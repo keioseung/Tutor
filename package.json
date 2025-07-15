@@ -24,6 +24,9 @@
     "db:migrate": "cd backend && npm run db:migrate",
     "db:seed": "cd backend && npm run db:seed"
   },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   },

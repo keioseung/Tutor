@@ -67,7 +67,7 @@ model ContentTranslation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  parentContent Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@unique([contentId, language])
   @@map("content_translations")
@@ -144,9 +144,9 @@ model Question {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content Content? @relation(fields: [contentId], references: [id], onDelete: SetNull)
-  answers Answer[]
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relatedContent Content? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  answers     Answer[]
 
   @@map("questions")
 }
