@@ -17,11 +17,9 @@ const PORT = process.env.PORT || 3001;
 
 // CORS configuration (가장 먼저!)
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN?.split(',') || [
-    'http://localhost:3000',
-    'http://localhost:3002',
-    'exp://localhost:8081',
-    'https://humble-spoon-5g5wrqwjq6xgf46gw-3001.app.github.dev' // Codespaces URL 추가
+  origin: [
+    'https://humble-spoon-5g5wrqwjq6xgf46gw-3000.app.github.dev', // Codespaces 프론트엔드 주소만 허용
+    // 필요시 추가 origin 여기에 입력
   ],
   credentials: true,
   optionsSuccessStatus: 200
