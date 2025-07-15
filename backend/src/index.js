@@ -15,20 +15,23 @@ const notificationRoutes = require('./routes/notification');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Security middleware
-app.use(helmet());
-
-// CORS configuration
+// CORS configuration (가장 먼저!)
 const corsOptions = {
   origin: process.env.CORS_ORIGIN?.split(',') || [
     'http://localhost:3000',
     'http://localhost:3002',
-    'exp://localhost:8081'
+    'exp://localhost:8081',
+    'https://humble-spoon-5g5wrqwjq6xgf46gw-3001.app.github.dev' // Codespaces URL 추가
   ],
   credentials: true,
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+// 모든 preflight 요청에 대해 CORS 헤더 반환
+app.options('*', cors(corsOptions));
+
+// Security middleware
+app.use(helmet());
 
 // Rate limiting
 const limiter = rateLimit({
