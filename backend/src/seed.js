@@ -6,21 +6,26 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seeding...');
 
-  // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 12);
+  // 관리자 계정 정보
+  const adminEmail = 'admin@aiedu.com';
+  const adminPassword = 'admin123';
+  const adminName = 'Admin User';
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
+
+  // 관리자 계정 생성 또는 upsert
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@aiedu.com' },
+    where: { email: adminEmail },
     update: {},
     create: {
-      email: 'admin@aiedu.com',
+      email: adminEmail,
       password: hashedPassword,
-      name: 'Admin User',
+      name: adminName,
       language: 'KOREAN',
-      level: 'ADVANCED'
-    }
+      level: 'ADVANCED',
+    },
   });
 
-  // Create test user
+  // 테스트 계정도 동일하게 보장
   const testUser = await prisma.user.upsert({
     where: { email: 'test@aiedu.com' },
     update: {},
@@ -29,11 +34,17 @@ async function main() {
       password: hashedPassword,
       name: 'Test User',
       language: 'ENGLISH',
-      level: 'BEGINNER'
-    }
+      level: 'BEGINNER',
+    },
   });
 
-  console.log('✅ Users created');
+  console.log('✅ Users created or ensured');
+  console.log('관리자 계정:');
+  console.log(`  이메일: ${adminEmail}`);
+  console.log(`  비밀번호: ${adminPassword}`);
+  console.log('테스트 계정:');
+  console.log('  이메일: test@aiedu.com');
+  console.log('  비밀번호: admin123');
 
   // Create sample contents
   const contents = [
