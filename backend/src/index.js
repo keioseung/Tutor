@@ -24,9 +24,9 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200
 };
+// CORS 미들웨어: 반드시 모든 미들웨어보다 먼저 등록!
 app.use(cors(corsOptions));
-// 모든 preflight 요청에 대해 CORS 헤더 반환
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions)); // preflight(OPTIONS) 허용
 
 // Security middleware
 app.use(helmet());
