@@ -1,0 +1,34 @@
+{
+  "name": "ai-education-app",
+  "version": "1.0.0",
+  "description": "AI Education App - Multilingual Learning Platform",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "mobile",
+    "admin"
+  ],
+  "scripts": {
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:admin\" \"npm run dev:mobile\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:mobile": "cd mobile && npm run start",
+    "dev:admin": "cd admin && npm run dev",
+    "install:all": "npm install && npm run install:backend && npm run install:mobile && npm run install:admin",
+    "install:backend": "cd backend && npm install",
+    "install:mobile": "cd mobile && npm install",
+    "install:admin": "cd admin && npm install",
+    "build:all": "npm run build:backend && npm run build:admin",
+    "build:backend": "cd backend && npm run build",
+    "build:admin": "cd admin && npm run build",
+    "db:setup": "cd backend && npm run db:setup",
+    "db:migrate": "cd backend && npm run db:migrate",
+    "db:seed": "cd backend && npm run db:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+} 

@@ -1,0 +1,43 @@
+{
+  "name": "AI Education App",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [3000, 3001, 8081],
+  "portsAttributes": {
+    "3000": {
+      "label": "Admin Dashboard",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Backend API",
+      "onAutoForward": "notify"
+    },
+    "8081": {
+      "label": "Mobile App",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "npm run install:all && cd backend && npm run db:setup && npm run db:seed",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "expo.vscode-expo-tools",
+        "ms-vscode.vscode-node-azure-pack"
+      ],
+      "settings": {
+        "typescript.preferences.includePackageJsonAutoImports": "on",
+        "typescript.suggest.autoImports": true,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  },
+  "remoteUser": "node"
+} 

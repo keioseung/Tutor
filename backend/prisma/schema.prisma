@@ -1,0 +1,255 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  avatar    String?
+  language  Language @default(KOREAN)
+  level     Level    @default(BEGINNER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Learning progress
+  learningProgress LearningProgress[]
+  favorites       Favorite[]
+  vocabulary      Vocabulary[]
+  notes           Note[]
+  questions       Question[]
+  answers         Answer[]
+  studyGroups     StudyGroupMember[]
+  notifications   Notification[]
+
+  @@map("users")
+}
+
+model Content {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    Category @default(AI_BASICS)
+  difficulty  Level    @default(BEGINNER)
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Multilingual content
+  translations ContentTranslation[]
+  
+  // Learning progress
+  learningProgress LearningProgress[]
+  favorites       Favorite[]
+  questions       Question[]
+
+  @@map("contents")
+}
+
+model ContentTranslation {
+  id        String   @id @default(cuid())
+  contentId String
+  language  Language
+  title     String
+  content   String
+  summary   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, language])
+  @@map("content_translations")
+}
+
+model LearningProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String
+  status    ProgressStatus @default(NOT_STARTED)
+  completedAt DateTime?
+  timeSpent  Int     @default(0) // in seconds
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@map("learning_progress")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@map("favorites")
+}
+
+model Vocabulary {
+  id        String   @id @default(cuid())
+  userId    String
+  word      String
+  meaning   String
+  language  Language
+  isLearned Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("vocabulary")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String?
+  title     String
+  content   String
+  language  Language
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String?
+  title     String
+  content   String
+  language  Language
+  isAnswered Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  content    String
+  isAccepted Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("answers")
+}
+
+model StudyGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  language    Language
+  maxMembers  Int      @default(10)
+  isPrivate   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members StudyGroupMember[]
+
+  @@map("study_groups")
+}
+
+model StudyGroupMember {
+  id           String   @id @default(cuid())
+  studyGroupId String
+  userId       String
+  role         GroupRole @default(MEMBER)
+  joinedAt     DateTime @default(now())
+
+  studyGroup StudyGroup @relation(fields: [studyGroupId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([studyGroupId, userId])
+  @@map("study_group_members")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// Enums
+enum Language {
+  KOREAN
+  ENGLISH
+  JAPANESE
+  CHINESE
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Category {
+  AI_BASICS
+  MACHINE_LEARNING
+  DEEP_LEARNING
+  NLP
+  COMPUTER_VISION
+  AI_ETHICS
+  AI_APPLICATIONS
+  PROGRAMMING
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum GroupRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum NotificationType {
+  DAILY_REMINDER
+  NEW_CONTENT
+  STUDY_GROUP_INVITE
+  QUESTION_ANSWER
+  SYSTEM
+} 
